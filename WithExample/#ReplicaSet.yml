@@ -1,0 +1,44 @@
+#ReplicaSet Format created by Krishnendu Bhowmick
+#ReplicaSet ——> It's next generation/advanced version of RC. ReplicaSet will support set based and equality based selectors where rc supports only equality based selectors.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata: #Replica Set details is here.
+  name: mavenappreplica
+  labels:
+    app: mavenappreplica
+spec:
+  # modify replicas according to your case
+  replicas: 2
+  selector:
+    matchLabels: #Equality
+      app: mavenappreplica
+  template: #POD Details is here.
+    metadata:
+      labels:
+        app: mavenappreplica
+    spec: #Container details is here.
+      containers:
+      - name: mavenappdev
+        image: krishhub/mavenapp:latest
+        ports:
+        - name: web
+          containerPort:  8080
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mavenappdevsvc
+  namespace: default
+spec:
+  selector:
+    app: mavenappreplica
+  type: NodePort
+  ports:
+  - name: mavenappdevsvc
+    protocol: TCP
+    port: 80
+    targetPort: 8080
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
+    nodePort: 30012

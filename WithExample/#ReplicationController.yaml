@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mavenapprepcontrol
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: mavenapprc
+      labels:
+        app: mavenapprepcontrol
+    spec:
+      containers:
+        - name: mavenrc
+          image: krishhub/mavenapp:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mavenapprcsvc
+  namespace: default
+spec:
+  selector:
+    app: mavenapprepcontrol
+  type: NodePort
+  ports:
+  - name: mavenapprcsvc
+    protocol: TCP
+    port: 80
+    targetPort: 8080 
+    nodePort: 30013

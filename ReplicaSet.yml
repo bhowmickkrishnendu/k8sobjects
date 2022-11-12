@@ -1,0 +1,41 @@
+#ReplicaSet Format created by Krishnendu Bhowmick
+#ReplicaSet ——> It's next generation/advanced version of RC. ReplicaSet will support set based and equality based selectors where rc supports only equality based selectors.
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata: #Replica Set details is here.
+  name: MYAPP
+  labels:
+    app: MYAPP
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels: #Equality
+      app: MYAPP
+    matchExpressions: #Set Based
+      - key: app
+        operator: in
+        values:
+          - "MYAPP"
+  template: #POD Details is here.
+    metadata:
+      labels:
+        app: MYAPP
+    spec: #Container details is here.
+      containers:
+      - name: MYAPP
+        image: nginx/nginx
+        ports:
+        - name: web
+          containerPort:  80
+          protocol: TCP
+        env:
+        - name: NGX_VERSION
+          value: 1.16.1
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai

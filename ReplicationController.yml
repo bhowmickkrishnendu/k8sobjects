@@ -1,0 +1,20 @@
+#ReplicationController Format created by Krishnendu Bhowmick
+apiVersion: v1
+kind: ReplicationController
+metadata: #Replication Controller Name
+  name: myapp
+spec:
+  replicas: 2
+  selector: #ReplicationController is only use equality based selctor.
+    app: myapp
+  template: #POD Details is here.
+    metadata:
+      name: myapp
+      labels:
+        app: myapp
+    spec: #Container details is here.
+      containers: 
+        - name: myapp
+          image: <Image>
+          ports:
+            - containerPort: 8080
