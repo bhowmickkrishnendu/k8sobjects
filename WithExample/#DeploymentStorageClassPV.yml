@@ -1,0 +1,113 @@
+---
+#Persistent Volume Claim Creation
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodbpersistent
+  namespace: default
+spec:
+  storageClassName: nfs-storageclass
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#Application Deployment Container Strategy Here
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  springappdeploy
+spec:
+  selector:
+    matchLabels:
+      app: springapp
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template: #container template
+    metadata:
+      labels:
+        app:  springapp
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  springappcontainer
+        image:  dockerhandson/spring-boot-mongo
+        env:
+        - name: MONGO_DB_HOSTNAME
+          value: mongodbsvc
+        - name: MONGO_DB_USERNAME
+          value: mongotest
+        - name: MONGO_DB_PASSWORD
+          value: mongo@123
+        ports:
+        - containerPort:  8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springappsvc
+spec:
+  selector:
+    app: springapp
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8080
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
+    nodePort: 30018
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mongodbreplicaset
+spec:
+  # modify replicas according to your case
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodbcontainer
+        image: mongo
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: mongotest
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: mongo@123
+        volumeMounts:
+        - name: mongovol
+          mountPath: /data/db
+      volumes:
+      - name: mongovol
+        persistentVolumeClaim:
+          claimName: mongodbpersistent   #Persistent Volume name declare here
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodbsvc
+spec:
+  selector:
+    app: mongodb
+  type: ClusterIP
+  ports:
+  - port: 27017
+    targetPort: 27017
+
