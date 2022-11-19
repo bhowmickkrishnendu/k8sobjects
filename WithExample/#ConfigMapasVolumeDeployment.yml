@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  javawebappdeployment
+  namespace: default
+  labels:
+    app:  javawebapp
+spec:
+  selector:
+    matchLabels:
+      app: javawebapp
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  javawebapp
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      volumes:
+        - name: javaconfigmapvol
+          configMap:
+            name: javaconfigmap
+            items:
+              - key: "tomcat-users.xml"
+                path: "tomcat-users.xml"
+      containers:
+      - name:  javawebapppod
+        image:  dockerhandson/java-web-app:2
+        ports:
+        - containerPort:  8080
+        volumeMounts:
+        - name: javaconfigmapvol
+          mountPath: /usr/local/tomcat/conf/tomcat-users.xml
+          subPath: "tomcat-users.xml"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: javawebappsvc
+  namespace: default
+spec:
+  selector:
+    app: javawebapp
+  type: NodePort
+  ports:
+  - name: javawebappport
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
+    nodePort: 30021
