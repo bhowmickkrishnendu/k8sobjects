@@ -1,3 +1,35 @@
+#Persistent Volume Creation
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfspv
+spec:
+  storageClassName: normal
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  nfs:
+    path: /mnt/nfsdrive
+    server: 172.31.11.88
+---
+#Persistent Volume Claim Creation
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodbpersistent
+  namespace: default
+spec:
+  storageClassName: normal
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#Application Deployment Container Strategy Here
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,9 +112,8 @@ spec:
           mountPath: /data/db
       volumes:
       - name: mongovol
-        nfs:
-          server: 172.31.11.88
-          path: /mnt/nfsdrive
+        persistentVolumeClaim:
+          claimName: mongodbpersistent   #Persistent Volume name declare here
 ---
 apiVersion: v1
 kind: Service

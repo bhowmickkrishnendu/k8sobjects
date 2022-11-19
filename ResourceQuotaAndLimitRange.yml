@@ -1,0 +1,35 @@
+#ResourceQuota set at Namespace level
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: test-quota-name
+  namespace: test-ns
+spec:
+  hard:
+    requests.cpu: '100m'
+    requests.memory: 100Mi
+    limits.cpu: '100m'
+    limits.memory: 256Mi
+---
+# LimitRange for Pod or Container
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: apache-test-limitrange
+  namespace: test-ns
+spec:
+  limits:
+  # 'default' and 'defaultRequest' may not be specified when type is 'Pod'
+  - type: Container
+    default:
+      cpu: 100m
+      memory: 100Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 100Mi
+    max:
+      cpu: 100m
+      memory: 256Mi
+    min:
+      cpu: 100m
+      memory: 100Mi
