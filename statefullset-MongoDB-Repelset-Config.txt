@@ -1,0 +1,20 @@
+# Setup Mongodb Reple Set And Added Members And Create the Administrator for the MongoDB
+
+# Go inside one of the pod
+
+kubectl exec -it mongod-0  bash
+hostname -f
+
+mongosh
+
+# Initiate mongod db reple set and add members
+
+rs.initiate({ _id: "MainRepSet", version: 1, 
+members: [ 
+ { _id: 0, host: "mongodb-service-0.mongo-headless-service.default.svc.cluster.local:27017" }, 
+ { _id: 1, host: "mongodb-service-1.mongo-headless-service.default.svc.cluster.local:27017" }, 
+ { _id: 2, host: "mongodb-service-2.mongo-headless-service.default.svc.cluster.local:27017" } ]});
+
+
+db.getSiblingDB("admin").createUser( {user : "mongotest",pwd  : "mongo@123",roles: [ { role: "root", db: "admin" } ] } );
+
