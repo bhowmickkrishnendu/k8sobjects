@@ -39,7 +39,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  springappcontainer
-        image:  dockerhandson/spring-boot-mongo
+        image:  krishhub/springboot-mongo-app
         env:
         - name: MONGO_DB_HOSTNAME
           value: mongodbsvc
