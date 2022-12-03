@@ -26,10 +26,10 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: disktype
+              - key: disktype   #Nodeblabel key this line.
                 operator: In
                 values: 
-                - ssd                                             #Node Affinity end here
+                - ssd           #Node Affinity end here (Node label value this line)
       containers:
       - name:  apachedeptest
         image:  krishhub/apachetest:latest
