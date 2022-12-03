@@ -1,0 +1,37 @@
+#NodeSelecctor: It will select a particular nodeas per given specification under spec. Basically node selector is a 
+#               features which will control the deployment on a particular node.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "apachetestpod"
+  namespace: default
+  labels:
+    app: "apachetestpod"
+spec:
+  containers:
+  - name: apachetestpod
+    image: "krishhub/apachetest:latest"
+    ports:
+    - containerPort:  80
+      name:  http
+  nodeSelector:                       #Adding a node selector
+    disktype: ssd                     #Node label added here
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apachetestsvc
+  namespace: default
+spec:
+  selector:
+    app: apachetestpod
+  type: NodePort
+  ports:
+  - name: apachetestsvc
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
+    nodePort: 30015
