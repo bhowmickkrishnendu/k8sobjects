@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  apachedeployment
+  namespace: default
+  labels:
+    app:  apachedeptest
+spec:
+  selector:
+    matchLabels:
+      app: apachedeptest
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  apachedeptest
+    spec:
+      affinity:      #Node affinity start from here. Hard (Required) Rules ——> requiredDuringSchedulingIgnoredDuringExecution  
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:                        #NodeSelectorTerms require in hard rule
+              - matchExpressions:
+                - key: disktype
+                  operator: In
+                  values: 
+                  - hdd               #Node Affinity end here ( Node label value keep worng for testing.)
+      containers:
+      - name:  apachedeptest
+        image:  krishhub/apachetest:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort:  80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apachetestsvc
+  namespace: default
+spec:
+  selector:
+    app: apachedeptest
+  type: NodePort
+  ports:
+  - name: apachetestsvc
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
+    nodePort: 30015
