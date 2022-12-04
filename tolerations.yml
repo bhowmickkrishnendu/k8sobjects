@@ -1,0 +1,15 @@
+# toleration to add under container section.
+#if value is available, operator should be equal and if value not available on label then operator should be exist.
+
+tolerations:
+- key: "key1"
+  operator: "Equal"
+  value: "value1"
+  effect: "NoSchedule"
+- key: "key2"
+  operator: "Equal"
+  value: "value1"
+  effect: "NoExecute"
+- key: "key3"
+  operator: "Exists"
+  effect: "NoSchedule"
