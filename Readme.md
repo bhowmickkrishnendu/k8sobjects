@@ -38,7 +38,7 @@ secret.yaml: a secret object that stores sensitive information, such as password
 job.yaml: a job object that runs a batch process to generate a report and save it to a shared volume.
 cronjob.yaml: a cron job object that schedules the batch process to run at regular intervals.
 
-##Contributing
+## Contributing
 
 If you have a Kubernetes object that you'd like to add to this repository, please fork the repository, create a new branch for your changes, add your object to the appropriate directory, and submit a pull request.
 
