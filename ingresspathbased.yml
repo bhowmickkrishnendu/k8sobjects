@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    # The following annotation will rewrite the request URI to remove the "/crud" or "/python" prefix from the path
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: krishnendu.online
+    http:
+      paths:
+      # This path rule will match any path starting with "/crud" and route it to the "crud-db-app-service" service
+      - path: /crud(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: crud-db-app-service
+            port:
+              name: http
+      # This path rule will match any path starting with "/python" and route it to the "pythondeploymentsvc" service
+      - path: /python(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: pythondeploymentsvc
+            port:
+              name: http
