@@ -1,37 +1,39 @@
+# Ingress resource for the crud-db-app-service
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: crud-db-app-service-ingress
-  namespace: default
+  name: crud-db-app-service-ingress    # The name of the Ingress resource
+  namespace: default                  # The namespace where the service is running
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx             # The ingress class name, specifying which controller to use
   rules:
-  - host: krishnendu.online
+  - host: krishnendu.online            # The domain name that this Ingress resource should match
     http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      - pathType: Prefix               # The type of path matching, "Prefix" in this case
+        path: "/"                      # The path prefix to match, in this case "/"
         backend:
           service:
-            name: crud-db-app-service       #this is cluster IP service name
+            name: crud-db-app-service   # The name of the cluster IP service to route traffic to
             port:
-              number: 80
+              number: 80                # The port number of the service to route traffic to
 ---
+# Ingress resource for the pythondeploymentsvc service
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: python-deployment-ingress
-  namespace: default
+  name: python-deployment-ingress     # The name of the Ingress resource
+  namespace: default                  # The namespace where the service is running
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx             # The ingress class name, specifying which controller to use
   rules:
-  - host: test.krishnendu.online
+  - host: test.krishnendu.online      # The domain name that this Ingress resource should match
     http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      - pathType: Prefix               # The type of path matching, "Prefix" in this case
+        path: "/"                      # The path prefix to match, in this case "/"
         backend:
           service:
-            name: pythondeploymentsvc       #this is cluster IP service name
+            name: pythondeploymentsvc   # The name of the cluster IP service to route traffic to
             port:
-              number: 8080
+              number: 8080              # The port number of the service to route traffic to
