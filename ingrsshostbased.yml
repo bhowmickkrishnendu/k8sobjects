@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crud-db-app-service-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: krishnendu.online
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: crud-db-app-service       #this is cluster IP service name
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: python-deployment-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: test.krishnendu.online
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: pythondeploymentsvc       #this is cluster IP service name
+            port:
+              number: 8080
